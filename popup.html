@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LinkedIn Smart Liker</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <style>
+    body { 
+      width: 380px; 
+      min-height: 500px; 
+      margin: 0; 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .container {
+      background: white;
+      border-radius: 12px;
+      margin: 8px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #0077B5 0%, #00A0DC 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .header p {
+      margin: 8px 0 0 0;
+      opacity: 0.9;
+      font-size: 0.9rem;
+    }
+    
+    .content {
+      padding: 20px;
+    }
+    
+    .status-card {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+    
+    .status-card.active {
+      background: #ecfdf5;
+      border-color: #10b981;
+    }
+    
+    .status-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ef4444;
+      transition: all 0.3s ease;
+    }
+    
+    .status-dot.active {
+      background: #10b981;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    
+    .toggle-switch {
+      position: relative;
+      width: 60px;
+      height: 32px;
+      background: #cbd5e1;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    
+    .toggle-switch.active {
+      background: #10b981;
+    }
+    
+    .toggle-knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 28px;
+      height: 28px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .toggle-knob.active {
+      transform: translateX(28px);
+    }
+    
+    .settings-card, .stats-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .card-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #1f2937;
+      margin-bottom: 16px;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-label {
+      display: block;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+    
+    .form-select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      background: white;
+      transition: border-color 0.2s ease;
+    }
+    
+    .form-select:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .range-container {
+      position: relative;
+    }
+    
+    .form-range {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #e2e8f0;
+      outline: none;
+    }
+    
+    .form-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #3b82f6;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .range-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+    
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .mini-toggle {
+      width: 44px;
+      height: 24px;
+      background: #cbd5e1;
+      border-radius: 12px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    
+    .mini-toggle.active {
+      background: #10b981;
+    }
+    
+    .mini-toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .mini-toggle.active::after {
+      transform: translateX(20px);
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: 12px;
+      background: #f8fafc;
+      border-radius: 8px;
+    }
+    
+    .stat-number {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1f2937;
+    }
+    
+    .stat-label {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+    
+    .session-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 0.9rem;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+    }
+    
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+    
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+    
+    .help-text {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20.447 20.41h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.244zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.23H3.555V9h3.564v11.663zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+        </svg>
+        Smart Liker
+      </h1>
+      <p>Intelligent LinkedIn engagement</p>
+    </div>
+
+    <div class="content">
+      <!-- Status -->
+      <div class="status-card" id="statusCard">
+        <div class="status-header">
+          <div class="status-indicator">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText" style="font-weight: 600;">Inactive</span>
+          </div>
+          <div class="toggle-switch" id="toggleSwitch">
+            <div class="toggle-knob" id="toggleKnob"></div>
+          </div>
+        </div>
+        <p class="help-text" id="statusDescription">Extension is currently disabled</p>
+      </div>
+
+      <!-- Settings -->
+      <div class="settings-card">
+        <div class="card-title">Settings</div>
+        
+        <div class="form-group">
+          <label class="form-label">Engagement Speed</label>
+          <select class="form-select" id="speedSetting">
+            <option value="conservative">Conservative (20-30s)</option>
+            <option value="normal">Normal (10-12s)</option>
+            <option value="active">Active (3-5s)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Like Probability</label>
+          <div class="range-container">
+            <input type="range" class="form-range" id="likeProbability" min="10" max="99" value="50">
+            <div class="range-labels">
+              <span>10%</span>
+              <span id="probabilityValue">70%</span>
+              <span>90%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="checkbox-container">
+          <div>
+            <div class="form-label" style="margin-bottom: 2px;">Smart Filtering</div>
+            <div class="help-text">Avoid liking posts from the same person repeatedly</div>
+          </div>
+          <div class="mini-toggle" id="smartFilterToggle"></div>
+        </div>
+      </div>
+
+      <!-- Statistics -->
+      <div class="stats-card">
+        <div class="card-title">Today's Activity</div>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number" id="likesCount" style="color: #3b82f6;">0</div>
+            <div class="stat-label">Likes Given</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="postsViewed" style="color: #10b981;">0</div>
+            <div class="stat-label">Posts Viewed</div>
+          </div>
+        </div>
+        <div class="session-info">
+          <span style="color: #6b7280;">Session Time:</span>
+          <span id="sessionTime" style="font-weight: 600;">00:00</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <button class="btn btn-secondary" id="resetStats">
+        Reset Statistics
+      </button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
